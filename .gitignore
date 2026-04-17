@@ -1,0 +1,15 @@
+# Executable
+corganizer
+
+# Object files
+*.o
+
+*.out
+
+.vscode/
+.idea/
+
+.DS_Store
+
+core
+core.*
