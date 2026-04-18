@@ -1,4 +1,5 @@
 #include "corganizer.h"
+#include <string.h>
 #include <sys/stat.h>
 
 bool is_valid_directory(const char *path) {
@@ -8,4 +9,15 @@ bool is_valid_directory(const char *path) {
     return false;
 
   return S_ISDIR(path_info.st_mode);
+}
+
+const char *get_extension(const char *filename) {
+
+  const char *dot;
+  dot = strrchr(filename, '.');
+
+  if (dot == NULL || dot == filename)
+    return "";
+
+  return dot;
 }

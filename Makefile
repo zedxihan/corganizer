@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -std=c99 -Wall -Wextra -pedantic -g -fsanitize=address
-SRC = src/main.c src/utils.c src/scan.c
+SRC = src/main.c src/utils.c src/scan.c src/rules.c
 OUT = corganizer
 
 all:

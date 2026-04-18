@@ -18,10 +18,12 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  printf("Mode: %s\n", argv[1]);
-  printf("Target: %s\n", argv[2]);
+  printf("Mode: %s\n\n", argv[1]);
 
-  scan_directory(argv[2]);
+  if (strcmp(argv[1], "scan") == 0)
+    scan_directory(argv[2]);
+  else
+    organize_directory(argv[2]);
 
   return 0;
 }
