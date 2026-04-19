@@ -1,68 +1,78 @@
 #include "corganizer.h"
+
 #include <dirent.h>
-#include <linux/limits.h>
-#include <stdbool.h>
+#include <limits.h>
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 
-static void handle_file(const char *path, const char *name, bool move_files) {
+static FileEntry *create_entry(const char *full_path, const char *filename);
 
-  char source[PATH_MAX];
-  char folder[PATH_MAX];
-  char target[PATH_MAX];
-
-  const char *ext = get_extension(name);
-  const char *category = get_category(ext);
-
-  snprintf(source, sizeof(source), "%s/%s", path, name);
-  snprintf(folder, sizeof(folder), "%s/%s", path, category);
-  snprintf(target, sizeof(target), "%s/%s/%s", path, category, name);
-
-  if (!move_files) {
-    printf("[MOVE] %s -> %s/%s\n", name, category, name);
-    return;
+// scan directory
+FileEntry *scan_directory(const char *dir) {
+  DIR *folder = opendir(dir);
+  if (!folder) {
+    perror("opendir");
+    return NULL;
   }
 
-  mkdir(folder, 0755);
-
-  if (rename(source, target) == 0)
-    printf("[DONE] %s -> %s/%s\n", name, category, name);
-  else
-    printf("[FAIL] %s\n", name);
-}
-
-static void process_directory(const char *path, bool move_files) {
   struct dirent *entry;
+  struct stat info;
+  char full_path[PATH_MAX];
 
-  DIR *folder = opendir(path);
-
-  if (folder == NULL) {
-    printf("Error: Cannot read directory\n");
-    return;
-  }
+  FileEntry *head = NULL;
+  FileEntry *tail = NULL;
 
   while ((entry = readdir(folder)) != NULL) {
-    char fullpath[PATH_MAX];
-    struct stat info;
-
-    if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-      continue;
     if (entry->d_name[0] == '.')
       continue;
 
-    snprintf(fullpath, sizeof(fullpath), "%s/%s", path, entry->d_name);
+    snprintf(full_path, PATH_MAX, "%s/%s", dir, entry->d_name);
 
-    if (stat(fullpath, &info) != 0)
-      continue;
-    if (S_ISDIR(info.st_mode))
+    if (stat(full_path, &info) != 0 || !S_ISREG(info.st_mode))
       continue;
 
-    handle_file(path, entry->d_name, move_files);
+    FileEntry *node = create_entry(full_path, entry->d_name);
+
+    if (node) {
+      if (!head)
+        head = node;
+      else
+        tail->next = node;
+      tail = node;
+    }
   }
+
   closedir(folder);
+  return head;
 }
 
-void scan_directory(const char *path) { process_directory(path, false); }
+// free linked list
+void free_list(FileEntry *head) {
+  while (head) {
+    FileEntry *next = head->next;
+    free(head);
+    head = next;
+  }
+}
 
-void organize_directory(const char *path) { process_directory(path, true); }
+// helper function
+static FileEntry *create_entry(const char *full_path, const char *filename) {
+  FileEntry *node = malloc(sizeof(*node));
+
+  if (!node) {
+    perror("malloc");
+    return NULL;
+  }
+
+  const char *ext = get_extension(filename);
+  const char *category = get_category(ext);
+
+  snprintf(node->source, sizeof(node->source), "%s", full_path);
+  snprintf(node->name, sizeof(node->name), "%s", filename);
+  snprintf(node->ext, sizeof(node->ext), "%s", ext);
+  snprintf(node->category, sizeof(node->category), "%s", category);
+
+  node->next = NULL;
+  return node;
+}
