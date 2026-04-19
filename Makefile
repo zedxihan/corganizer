@@ -2,6 +2,9 @@ CC = gcc
 SRC = src/main.c src/scan.c src/execute.c src/rules.c src/utils.c
 OUT = corganizer
 
+PREFIX ?= /usr/local
+BINDIR ?= $(PREFIX)/bin
+
 WARN = -Wall -Wextra -Wpedantic
 STD = -std=c99
 
@@ -18,6 +21,14 @@ debug:
 
 clean:
 	rm -f $(OUT)
+
+install: release
+	@echo "Installing $(OUT) to $(DESTDIR)$(BINDIR)"
+	install -Dm755 $(OUT) "$(DESTDIR)$(BINDIR)/$(OUT)"
+
+uninstall:
+	@echo "Removing $(OUT) from $(DESTDIR)$(BINDIR)"
+	rm -f "$(DESTDIR)$(BINDIR)/$(OUT)"
 
 format:
 	clang-format -i src/*.c src/*.h
