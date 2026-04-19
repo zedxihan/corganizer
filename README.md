@@ -40,7 +40,17 @@
 - **Smart Categorization:** Case-insensitive extension matching (e.g., `.JPG` and `.jpg` both go to Images).
 - **Memory Safe:** Thoroughly tested with AddressSanitizer (`-fsanitize=address`) to help ensure stability.
 
-## Manual Build
+## Installation
+
+### Arch Linux (AUR)
+
+Latest stable version using `yay` (or any other AUR helper)
+
+```bash
+yay -S corganizer
+```
+
+### Manual Build
 
 Clone the project and compile it locally using `make`.
 
@@ -50,7 +60,6 @@ cd corganizer
 make
 sudo make install
 ```
-
 ## Usage
 
 ### 1. Preview Mode (Dry-Run)
