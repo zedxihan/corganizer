@@ -6,7 +6,7 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "corganizer";
-  version = "1.0.0";
+  version = "1.1.0";
   __structuredAttrs = true;
   strictDeps = true;
 
