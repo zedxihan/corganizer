@@ -39,6 +39,7 @@
 - **Dry-Run Previews:** Safely see exactly where your files will go without actually moving them.
 - **Smart Categorization:** Case-insensitive extension matching (e.g., `.JPG` and `.jpg` both go to Images).
 - **Memory Safe:** Thoroughly tested with AddressSanitizer (`-fsanitize=address`) to help ensure stability.
+- **Clean Table UI:** Color-coded, aligned table output for previews and moves with clear status indicators.
 
 ## Installation
 

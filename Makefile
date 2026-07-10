@@ -1,5 +1,5 @@
 CC = gcc
-SRC = src/main.c src/scan.c src/execute.c src/rules.c src/utils.c
+SRC = src/main.c src/scan.c src/execute.c src/rules.c src/utils.c src/ui.c
 OUT = corganizer
 
 PREFIX ?= /usr/local

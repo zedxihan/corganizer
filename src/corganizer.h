@@ -26,4 +26,9 @@ void execute_moves(FileEntry *head);
 const char *get_extension(const char *filename);
 const char *get_category(const char *ext);
 
+void ui_print_header(const char *title, const char *color_type);
+void ui_print_row(const char *status, const char *name, const char *category,
+                  const char *color_type);
+void ui_print_footer(void);
+
 #endif

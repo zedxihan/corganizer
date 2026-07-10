@@ -9,20 +9,19 @@ static void build_paths(const FileEntry *node, char *folder, char *target);
 
 // preview mode
 void preview_moves(FileEntry *head) {
-  printf("PREVIEW MODE: No files will be moved\n");
+  ui_print_header("PREVIEW MODE: No files will be moved", "yellow");
 
   while (head) {
-    char folder[PATH_MAX];
-    char target[PATH_MAX];
-    build_paths(head, folder, target);
-
-    printf("[PREVIEW] %s -> %s\n", head->name, target);
+    ui_print_row("PREVIEW", head->name, head->category, "yellow");
     head = head->next;
   }
+  ui_print_footer();
 }
 
 // execute mode
 void execute_moves(FileEntry *head) {
+  ui_print_header("ORGANIZING FILES", "green");
+
   while (head) {
     char folder[PATH_MAX];
     char target[PATH_MAX];
@@ -31,14 +30,14 @@ void execute_moves(FileEntry *head) {
     mkdir(folder, 0755);
 
     if (rename(head->source, target) == 0) {
-      printf("[MOVED] %s -> %s/\n", head->name, head->category);
+      ui_print_row("SUCCESS", head->name, head->category, "green");
     } else {
-      perror("[FAIL] Error moving file\n");
-      printf("File: %s\n", head->name);
+      ui_print_row("FAILED", head->name, "ERROR", "red");
     }
 
     head = head->next;
   }
+  ui_print_footer();
 }
 
 // helper function
@@ -51,5 +50,9 @@ static void build_paths(const FileEntry *node, char *folder, char *target) {
   else
     snprintf(folder, PATH_MAX, "%s", node->category);
 
-  snprintf(target, PATH_MAX, "%s/%s", folder, node->name);
+  size_t room = PATH_MAX - strlen(node->name) - 2;
+  if (room > 0)
+    snprintf(target, PATH_MAX, "%.*s/%s", (int)room, folder, node->name);
+  else
+    target[0] = '\0';
 }

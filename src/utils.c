@@ -13,7 +13,6 @@ bool is_valid_directory(const char *path) {
 }
 
 const char *get_extension(const char *filename) {
-
   const char *dot = strrchr(filename, '.');
 
   if (!dot || dot == filename)
