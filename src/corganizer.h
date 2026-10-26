@@ -1,34 +1,37 @@
 #ifndef CORGANIZER_H
 #define CORGANIZER_H
 
-#include <limits.h>
-#include <linux/limits.h>
-#include <stdbool.h>
+#include <stddef.h>
 
-typedef struct FileEntry {
-  char source[PATH_MAX];
-  char name[256];
-  char ext[32];
-  char category[64];
+#define MAX_FILES 100000
+#define ARENA_CAPACITY (16 * 1024 * 1024)   // 16 MB
 
-  struct FileEntry *next;
+typedef enum {
+    STATUS_PENDING,
+    STATUS_MOVED,
+    STATUS_SKIPPED,
+    STATUS_FAILED,
+} Status;
+
+typedef struct {
+    char *base;
+    size_t used;
+    size_t capacity;
+} Arena;
+
+typedef struct {
+    const char *path;   // full path
+    const char *name;   // a.pdf
+    const char *category;
+    Status status;
 } FileEntry;
 
-// prototypes
-bool is_valid_directory(const char *path);
+typedef struct {
+    FileEntry *entries;
+    size_t count;
+    Arena string_arena;
+} FileList;
 
-FileEntry *scan_directory(const char *path);
-void free_list(FileEntry *head);
-
-void preview_moves(FileEntry *head);
-void execute_moves(FileEntry *head);
-
-const char *get_extension(const char *filename);
-const char *get_category(const char *ext);
-
-void ui_print_header(const char *title, const char *color_type);
-void ui_print_row(const char *status, const char *name, const char *category,
-                  const char *color_type);
-void ui_print_footer(void);
+// TODO: prototypes and func calls
 
 #endif
