@@ -1,10 +1,11 @@
 #ifndef CORGANIZER_H
 #define CORGANIZER_H
 
+#include <stdbool.h>
 #include <stddef.h>
 
 #define MAX_FILES 100000
-#define ARENA_CAPACITY (16 * 1024 * 1024)   // 16 MB
+#define ARENA_CAPACITY (16 * 1024 * 1024) // 16 MB
 
 typedef enum {
     STATUS_PENDING,
@@ -20,8 +21,8 @@ typedef struct {
 } Arena;
 
 typedef struct {
-    const char *path;   // full path
-    const char *name;   // a.pdf
+    const char *path; // full path
+    const char *name; // a.pdf
     const char *category;
     Status status;
 } FileEntry;
@@ -33,5 +34,8 @@ typedef struct {
 } FileList;
 
 // TODO: prototypes and func calls
+
+// rules
+const char *get_category(const char *filename);
 
 #endif

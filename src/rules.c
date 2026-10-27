@@ -1,33 +1,47 @@
 #include "corganizer.h"
 
-#include <stddef.h>
+#include <string.h>
 #include <strings.h>
 
 typedef struct {
-  const char *category;
-  const char *extensions[64];
+    const char *category;
+    const char *const *exts;
 } RuleGroup;
 
+// clang-format off
+static const char *const document_exts[] = {".pdf", ".doc",  ".docx", ".txt",
+                                            ".md",  ".csv",  ".xlsx", ".pptx", NULL};
+
+static const char *const image_exts[] = {".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp", NULL};
+
+static const char *const code_exts[] = {".c",    ".h",   ".cpp",  ".py",  ".js",   ".ts",
+                                        ".jsx",  ".tsx", ".html", ".css", ".json", ".sh",
+                                        ".java", ".go",  ".rb",   ".php", ".rs",   ".swift", NULL};
+
+static const char *const archive_exts[] = {".zip", ".rar", ".gz", ".tar", ".7z", ".xz", NULL};
+
+static const char *const media_exts[] = {".mp4", ".mp3", ".mkv", ".wav",
+                                         ".avi", ".mov", ".flv", ".wmv", NULL};
+
 static const RuleGroup rules[] = {
-    {"Documents", {".pdf", ".doc", ".docx", ".txt", ".md", ".csv", ".xlsx", ".pptx", NULL}},
-    {"Images", {".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp", NULL}},
-    {"Code",
-     {".c", ".h", ".cpp", ".py", ".js", ".ts", ".jsx", ".tsx", ".html", ".css", ".json", ".sh",
-      ".java", ".go", ".rb", ".php", ".rs", ".swift", NULL}},
-    {"Archives", {".zip", ".rar", ".gz", ".tar", ".7z", ".xz", NULL}},
-    {"Media", {".mp4", ".mp3", ".mkv", ".wav", ".avi", ".mov", ".flv", ".wmv", NULL}}};
+    {"Documents", document_exts},
+    {"Images", image_exts},
+    {"Code", code_exts},
+    {"Archives", archive_exts},
+    {"Media", media_exts},
+};
+// clang-format on
 
-const char *get_category(const char *ext) {
-  size_t count = sizeof(rules) / sizeof(rules[0]);
+const char *get_category(const char *filename) {
+    const char *ext = strrchr(filename, '.');
+    if (ext == NULL || ext == filename) // .bashrc
+        return "Others";
 
-  if (!ext || ext[0] == '\0')
-    return "Others";
-
-  for (size_t i = 0; i < count; i++) {
-    for (size_t j = 0; rules[i].extensions[j] != NULL; j++) {
-      if (strcasecmp(ext, rules[i].extensions[j]) == 0)
-        return rules[i].category;
+    for (size_t i = 0; i < sizeof(rules) / sizeof(rules[0]); i++) {
+        for (size_t j = 0; rules[i].exts[j] != NULL; j++) {
+            if (strcasecmp(ext, rules[i].exts[j]) == 0)
+                return rules[i].category;
+        }
     }
-  }
-  return "Others";
+    return "Others";
 }
