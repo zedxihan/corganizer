@@ -12,6 +12,7 @@ typedef enum {
     STATUS_MOVED,
     STATUS_SKIPPED,
     STATUS_FAILED,
+    STATUS_COUNT, // number
 } Status;
 
 typedef struct {
@@ -33,9 +34,18 @@ typedef struct {
     Arena string_arena;
 } FileList;
 
-// TODO: prototypes and func calls
+// prototypes and func calls
+// arena
+bool arena_init(Arena *arena, size_t capacity);
+void *arena_alloc(Arena *arena, size_t size);
+void arena_release(Arena *arena);
 
 // rules
 const char *get_category(const char *filename);
+
+// ui
+void ui_print_header(bool run);
+void ui_print_row(const FileEntry *entry);
+void ui_print_footer(const FileList *list);
 
 #endif
