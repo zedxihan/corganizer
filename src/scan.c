@@ -1,78 +1,53 @@
 #include "corganizer.h"
 
 #include <dirent.h>
-#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
+#include <string.h>
 
-static FileEntry *create_entry(const char *full_path, const char *filename);
-
-// scan directory
-FileEntry *scan_directory(const char *dir) {
-  DIR *folder = opendir(dir);
-  if (!folder) {
-    perror("opendir");
-    return NULL;
-  }
-
-  struct dirent *entry;
-  struct stat info;
-  char full_path[PATH_MAX];
-
-  FileEntry *head = NULL;
-  FileEntry *tail = NULL;
-
-  while ((entry = readdir(folder)) != NULL) {
-    if (entry->d_name[0] == '.')
-      continue;
-
-    snprintf(full_path, PATH_MAX, "%s/%s", dir, entry->d_name);
-
-    if (stat(full_path, &info) != 0 || !S_ISREG(info.st_mode))
-      continue;
-
-    FileEntry *node = create_entry(full_path, entry->d_name);
-
-    if (node) {
-      if (!head)
-        head = node;
-      else
-        tail->next = node;
-      tail = node;
+bool scan_directory(const char *dir_path, FileList *list) {
+    DIR *dir = opendir(dir_path);
+    if (!dir) {
+        perror(dir_path);
+        return false;
     }
-  }
 
-  closedir(folder);
-  return head;
+    list->count = 0;
+    list->entries = calloc(MAX_FILES, sizeof(FileEntry));
+    if (list->entries == NULL ||
+        !arena_init(&list->string_arena, ARENA_CAPACITY)) {
+        fprintf(stderr, "Out of memory\n");
+        free(list->entries);
+        closedir(dir);
+        return false;
+    }
+
+    size_t prefix_len = strlen(dir_path) + 1; // "dir/"
+    struct dirent *item;
+
+    while ((item = readdir(dir)) != NULL) {
+        if (item->d_type != DT_REG || item->d_name[0] == '.')
+            continue;
+
+        size_t size = prefix_len + strlen(item->d_name) + 1; // "dir/a.pdf\0"
+        char *path = arena_alloc(&list->string_arena, size);
+        if (list->count == MAX_FILES || !path) {
+            fprintf(stderr, "Warning: too many files, ignoring the rest\n");
+            break;
+        }
+        snprintf(path, size, "%s/%s", dir_path, item->d_name);
+
+        FileEntry *entry = &list->entries[list->count++];
+        entry->path = path;
+        entry->name = path + prefix_len;
+        entry->category = get_category(entry->name);
+        entry->status = STATUS_PENDING;
+    }
+    closedir(dir);
+    return true;
 }
 
-// free linked list
-void free_list(FileEntry *head) {
-  while (head) {
-    FileEntry *next = head->next;
-    free(head);
-    head = next;
-  }
-}
-
-// helper function
-static FileEntry *create_entry(const char *full_path, const char *filename) {
-  FileEntry *node = malloc(sizeof(*node));
-
-  if (!node) {
-    perror("malloc");
-    return NULL;
-  }
-
-  const char *ext = get_extension(filename);
-  const char *category = get_category(ext);
-
-  snprintf(node->source, sizeof(node->source), "%s", full_path);
-  snprintf(node->name, sizeof(node->name), "%s", filename);
-  snprintf(node->ext, sizeof(node->ext), "%s", ext);
-  snprintf(node->category, sizeof(node->category), "%s", category);
-
-  node->next = NULL;
-  return node;
+void list_release(FileList *list) {
+    free(list->entries);
+    arena_release(&list->string_arena);
 }

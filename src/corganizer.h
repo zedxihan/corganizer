@@ -43,6 +43,10 @@ void arena_release(Arena *arena);
 // rules
 const char *get_category(const char *filename);
 
+// scan
+bool scan_directory(const char *dir_path, FileList *list);
+void list_release(FileList *list);
+
 // ui
 void ui_print_header(bool run);
 void ui_print_row(const FileEntry *entry);
