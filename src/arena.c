@@ -19,7 +19,7 @@ void *arena_alloc(Arena *arena, size_t size) {
 }
 
 void arena_release(Arena *arena) {
-    free(arena);
+    free(arena->base);
     arena->base = NULL;
     arena->used = 0;
     arena->capacity = 0;
