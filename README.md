@@ -1,5 +1,5 @@
 <h1 align="center">corganizer</h1>
-<h3 align="center">A blazing fast, memory-safe CLI tool to automatically organize your cluttered files</h3>
+<h3 align="center">A blazing fast CLI tool to automatically organize your cluttered files</h3>
 
 <h1 align="center">
 <a href="https://github.com/zedxihan/corganizer">
@@ -16,8 +16,9 @@
 </h1>
 
 > [!WARNING]  
-> **Always Preview First:** `corganizer` moves files directly on your filesystem. While it is built to be extremely safe,
-> it is highly recommended to always run the `scan` command first to preview the changes before executing the `run` command.
+> **Preview Is The Default:** `corganizer` moves files directly on your filesystem. By default it only
+> shows what it would do and moves nothing. Always check the preview first, then add `-r` / `--run`
+> to actually move the files.
 
 ## 💖 Support Us
 
@@ -28,18 +29,25 @@
 
 ## Description
 
-`corganizer` is a deeply optimized, POSIX-compliant command-line utility written in strict C99. It scans messy directories and automatically categorizes your files into 
- organized folders (Documents, Images, Code, Media, Archives) based on their file extensions. Built with a robust two-phase architecture, it ensures memory safety and provides
- a dry-run preview before touching your filesystem.
+`corganizer` is a fast command-line utility for Linux, written in C99. It scans a messy directory
+and automatically sorts your files into category folders (Documents, Images, Code, Media, Archives,
+Others) based on their file extensions. It works in two phases: it first scans the folder into a
+compact in-memory list, then either prints a preview or moves the files.
 
 ## Features
 
-- **Blazing Fast:** Written in pure C with zero external dependencies, optimized with `-O2`.
-- **Two-Phase Safety:** Uses a linked-list architecture to build a task queue (`scan`) before performing any disk operations (`run`).
-- **Dry-Run Previews:** Safely see exactly where your files will go without actually moving them.
-- **Smart Categorization:** Case-insensitive extension matching (e.g., `.JPG` and `.jpg` both go to Images).
-- **Memory Safe:** Thoroughly tested with AddressSanitizer (`-fsanitize=address`) to help ensure stability.
-- **Clean Table UI:** Color-coded, aligned table output for previews and moves with clear status indicators.
+- **Blazing Fast:** Written in pure C with zero external dependencies, optimized with `-O2`. The
+  whole file list lives in two memory blocks (an arena for paths and a flat array of entries)
+  instead of one allocation per file.
+- **Preview By Default:** See exactly where your files will go without moving anything. Files are
+  only moved when you pass `-r`.
+- **Never Overwrites:** If a file with the same name already exists in the destination, it is
+  skipped and reported instead of being replaced.
+- **Smart Categorization:** Case-insensitive extension matching (e.g., `.JPG` and `.jpg` both go to
+  Images).
+- **Clean Table UI:** Color-coded, aligned table output with a clear status for every file and a
+  summary line at the end.
+- **Tested With AddressSanitizer:** Built and tested with `-fsanitize=address` (`make debug`).
 
 ## Installation
 
@@ -61,30 +69,40 @@ cd corganizer
 make
 sudo make install
 ```
+
+Requires Linux (kernel 3.15+ and glibc 2.28+) and a C99 compiler.
+
 ## Usage
 
-### 1. Preview Mode (Dry-Run)
+### 1. Preview Mode (Default)
 
-Safely preview how your messy directory will be organized (no files will be moved during this phase):
+Safely preview how your messy directory will be organized (no files are moved):
 
 ```bash
-corganizer scan ~/Downloads
+corganizer ~/Downloads
 ```
 
 ### 2. Run Mode (Execute)
 
-Execute the operations to permanently move the files into their respective category folders:
+Move the files into their respective category folders:
 
 ```bash
-corganizer run ~/Downloads
+corganizer -r ~/Downloads
 ```
+
+### Options
+
+| Option          | Description                                  |
+| --------------- | -------------------------------------------- |
+| `-r`, `--run`   | Move the files (default: preview only)       |
+| `-h`, `--help`  | Show the help message                        |
 
 ## 🗺 Roadmap
 
 - Support for customized `.corganizerrc` configuration settings.
 - Implement recursive descending directory scanning.
 - Native undo history to easily revert past operations.
-- Built-in collision handling with automated file renaming.
+- Automatic renaming on name collisions (currently such files are skipped).
 
 ## Hacking
 
