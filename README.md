@@ -6,7 +6,7 @@
 <img src="https://img.shields.io/github/stars/zedxihan/corganizer?style=for-the-badge&logo=github&labelColor=11140F&color=BBE9AA">
 </a>
 <a href="https://github.com/zedxihan/corganizer/blob/main/LICENSE">
-<img src="https://img.shields.io/github/license/zedxihan/corganizer?style=for-the-badge&logo=gnu&labelColor=11140F&color=BBE9AA">
+<img src="https://img.shields.io/github/license/zedxihan/corganizer?style=for-the-badge&logo=mit&labelColor=11140F&color=BBE9AA">
 </a>
 <a href="https://github.com/zedxihan/corganizer/commits">
 <img src="https://img.shields.io/github/last-commit/zedxihan/corganizer?style=for-the-badge&logo=git&labelColor=11140F&color=BBE9AA">
