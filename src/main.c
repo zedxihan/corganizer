@@ -1,41 +1,54 @@
 #include "corganizer.h"
 
+#include <getopt.h>
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
+
+static void print_usage(void) {
+    fprintf(stderr, "Usage: corganizer [options] <folder>\n"
+                    "  -r, --run     move the files (default: preview only)\n"
+                    "  -h, --help    show this help\n");
+}
 
 int main(int argc, char *argv[]) {
-  if (argc != 3) {
-    printf("Usage: ./corganizer <scan | run> <folder>\n");
-    return 1;
-  }
+    bool run = false;
 
-  if (strcmp(argv[1], "scan") != 0 && strcmp(argv[1], "run") != 0) {
-    printf("Error: Mode must be 'scan' or 'run'\n");
-    return 1;
-  }
+    static const struct option long_opts[] = {
+        {.name = "run", .has_arg = no_argument, .val = 'r'},
+        {.name = "help", .has_arg = no_argument, .val = 'h'},
+        {0}};
 
-  if (!is_valid_directory(argv[2])) {
-    printf("Error: Invalid directory\n");
-    return 1;
-  }
+    int opt;
+    while ((opt = getopt_long(argc, argv, "rh", long_opts, NULL)) != -1) {
+        switch (opt) {
+        case 'r':
+            run = true;
+            break;
+        case 'h':
+            print_usage();
+            return EXIT_SUCCESS;
+        default:
+            print_usage();
+            return EXIT_FAILURE;
+        }
+    }
 
-  printf("Mode: %s\n\n", argv[1]);
+    if (optind != argc - 1) {
+        print_usage();
+        return EXIT_FAILURE;
+    }
+    const char *folder = argv[optind];
 
-  // function calls
-  FileEntry *list = scan_directory(argv[2]);
+    //  function calls
+    FileList list;
+    if (!scan_directory(folder, &list))
+        return EXIT_FAILURE;
 
-  if (!list) {
-    printf("No files to organize or unable to read directory\n");
-    return 0;
-  }
+    if (list.count == 0)
+        printf("No file to organize\n");
+    else
+        organize_files(&list, run);
 
-  if (strcmp(argv[1], "scan") == 0)
-    preview_moves(list);
-  else
-    execute_moves(list);
-
-  // free memory
-  free_list(list);
-
-  return 0;
+    list_release(&list);
+    return EXIT_SUCCESS;
 }

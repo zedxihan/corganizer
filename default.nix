@@ -6,7 +6,7 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "corganizer";
-  version = "1.1.0";
+  version = "2.0.0";
   __structuredAttrs = true;
   strictDeps = true;
 
@@ -14,7 +14,7 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "zedxihan";
     repo = "corganizer";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-0qx3jwnldlpw4nvnli1fkwxspl2801xcdzf5kghr8cfmrxirm76c";
+    hash = lib.fakeHash;
   };
 
   installPhase = ''
@@ -28,11 +28,11 @@ stdenv.mkDerivation (finalAttrs: {
   passthru.updateScript = nix-update-script { };
 
   meta = {
-    description = "A blazing fast, memory-safe CLI tool to automatically organize your cluttered files";
+    description = "A blazing fast CLI tool to automatically organize your cluttered files";
     homepage = "https://github.com/zedxihan/corganizer";
     changelog = "https://github.com/zedxihan/corganizer/releases/tag/${finalAttrs.src.tag}";
     license = lib.licenses.mit;
     mainProgram = "corganizer";
-    platforms = lib.platforms.all;
+    platforms = lib.platforms.linux;
   };
 })
