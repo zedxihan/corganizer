@@ -34,7 +34,7 @@ typedef struct {
     Arena string_arena;
 } FileList;
 
-// prototypes and func calls
+// prototypes
 // arena
 bool arena_init(Arena *arena, size_t capacity);
 void *arena_alloc(Arena *arena, size_t size);
@@ -46,6 +46,9 @@ const char *get_category(const char *filename);
 // scan
 bool scan_directory(const char *dir_path, FileList *list);
 void list_release(FileList *list);
+
+// execute
+void organize_files(FileList *list, bool run);
 
 // ui
 void ui_print_header(bool run);

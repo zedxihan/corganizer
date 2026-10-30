@@ -1,3 +1,4 @@
+#define _DEFAULT_SOURCE
 #include "corganizer.h"
 
 #include <dirent.h>

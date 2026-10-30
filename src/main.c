@@ -39,7 +39,16 @@ int main(int argc, char *argv[]) {
     }
     const char *folder = argv[optind];
 
-    // TODO: the FileList declare and function calls
+    //  function calls
+    FileList list;
+    if (!scan_directory(folder, &list))
+        return EXIT_FAILURE;
 
+    if (list.count == 0)
+        printf("No file to organize\n");
+    else
+        organize_files(&list, run);
+
+    list_release(&list);
     return EXIT_SUCCESS;
 }
