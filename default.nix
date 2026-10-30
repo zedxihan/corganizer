@@ -14,7 +14,7 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "zedxihan";
     repo = "corganizer";
     tag = "v${finalAttrs.version}";
-    hash = lib.fakeHash;
+    hash = "sha256-Ol/Ay0fQb7wSbZKR5AGTTTm5ryNUZPXoCCogX8kFy/o=";
   };
 
   installPhase = ''
